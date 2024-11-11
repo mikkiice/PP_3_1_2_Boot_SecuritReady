@@ -1,11 +1,58 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Spring Security Example</title>
+    <title>UserList</title>
 </head>
 <body>
-<h1>User, welcome spring boot security page!</h1>
-
-
+<div class="table-container">
+    <h1 align="center">Список пользователей</h1>
+    <div align="center" class="button-group" sec:authorize="isFullyAuthenticated()">
+        <a href="/logout">Logout</a>
+    </div>
+    <br />
+<div sec:authorize="hasRole('ROLE_USER') and !hasRole('ROLE_ADMIN')" th:align="center" th:each="user : ${users}" class="user-info">
+    <div style="text-align: center;">
+        <strong>Ваши данные: </strong>
+    </div>
+    <div>
+        <strong>USERNAME:</strong>
+        <span th:utext="${user.username}">...</span>
+    </div>
+    <div>
+        <strong>ROLES:</strong>
+        <span th:utext="${user.role}">...</span>
+    </div>
+    </div>
+<br />
+<div th:if="${#authorization.expression('(hasRole(''ROLE_ADMIN'') and hasRole(''ROLE_USER'')) or hasRole(''ROLE_ADMIN'')')}" align="center">
+    <a href="/admin/users/new">Добавить пользователя</a>
+    <a th:if="${currentPath == '/admin'}" href="/user">Показать только свой профиль</a>
+    <a th:if="${currentPath == '/user'}" href="/admin">Показать все профили</a>
+    <br />
+    <br />
+    <div>
+        <table>
+            <thead>
+            <tr>
+                <th>USERNAME</th>
+                <th>ROLES</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:utext="${user.username}">...</td>
+                <td th:utext="${user.role}">...</td>
+                <td>
+                    <a th:href="@{'/admin/users/edit/' + ${user.username}}">EDIT</a>
+                    <a th:href="@{'/admin/users/delete/' + ${user.username}}">FORCE REMOVE</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
 </body>
 </html>
