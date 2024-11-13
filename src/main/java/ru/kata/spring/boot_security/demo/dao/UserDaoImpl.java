@@ -29,15 +29,6 @@ public class UserDaoImpl implements UserDao {
         entityManager.persist(user);
     }
 
-//    @Override
-//    @Transactional
-//    public void deleteUser(Long id) {
-//        User user = entityManager.find(User.class, id);
-//        if (user != null) {
-//            entityManager.remove(user);
-//        }
-//    }
-
     @Override
     @Transactional
     public void updateUser(User user) {
@@ -55,13 +46,11 @@ public class UserDaoImpl implements UserDao {
 
 
     @Override
-    @Transactional
     public List<User> getAllUsers() {
         return entityManager.createQuery("FROM User", User.class).getResultList();
     }
 
     @Override
-    @Transactional
     public String getRolesByUsername(String username) {
         User user = userRepository.findByUsername(username);
         return user.getRole();
