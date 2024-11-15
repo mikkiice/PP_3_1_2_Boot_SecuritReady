@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
-import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
-import ru.kata.spring.boot_security.demo.repositories.UserRepository;
+import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,15 +21,13 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository;
-    private final UserRepository userRepository;
+    private final RoleService roleService;
 
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder, RoleRepository roleRepository, UserRepository userRepository) {
+    public UserController(UserService userService, PasswordEncoder passwordEncoder, RoleService roleService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
-        this.roleRepository = roleRepository;
-        this.userRepository = userRepository;
+        this.roleService = roleService;
 
     }
 
@@ -54,7 +51,7 @@ public class UserController {
         User user = new User();
         ModelAndView modelAndView = new ModelAndView("new_user");
         modelAndView.addObject("user", user);
-        List<Role> roles = roleRepository.findAll();
+        List<Role> roles = roleService.findAll();
         modelAndView.addObject("allRoles", roles);
         return modelAndView;
     }
@@ -63,7 +60,7 @@ public class UserController {
     public String saveUser(@ModelAttribute("user") User user, Model model) {
         if (userService.existsByUsername(user.getUsername())) {
             model.addAttribute("usernameError","Имя пользователя занято");
-            model.addAttribute("allRoles", roleRepository.findAll());
+            model.addAttribute("allRoles", roleService.findAll());
             return "edit";
         }
         User newUser = new User();
@@ -81,7 +78,7 @@ public class UserController {
         User user = userService.findByUsername(username);
         ModelAndView modelAndView = new ModelAndView("edit");
         modelAndView.addObject("user", user);
-        List<Role> roles = roleRepository.findAll();
+        List<Role> roles = roleService.findAll();
         modelAndView.addObject("allRoles", roles);
 
         return modelAndView;
